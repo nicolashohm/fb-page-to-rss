@@ -25,10 +25,15 @@ class FbPageParser {
         /** @var AbstractNode[] $posts */
         $posts = $this->dom->find('.userContentWrapper');
         foreach ($posts as $post) {
-            $clearfix = $post->find('.clearfix');
-            $clearfix[0]->clear();
-            printf('%s%s',PHP_EOL, strip_tags($post));
+            /** @var AbstractNode $clearfix */
+            $clearfix = $post->find('.clearfix')[0];
+            $clearfix->getParent()->removeChild($clearfix->id());
+            /** @var AbstractNode $commentable */
+            $commentable = $post->find('.commentable_item')[0];
+            $commentable->getParent()->removeChild($commentable->id());
+
         }
+        return $posts;
     }
 
 }
@@ -37,4 +42,4 @@ $dom->loadFromFile('fb.html');
 
 $parser = new FbPageParser($dom);
 #$parser->printUserContent();
-$parser->fullPosts();
+$posts = $parser->fullPosts();
