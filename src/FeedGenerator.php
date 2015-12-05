@@ -14,6 +14,8 @@ use Suin\RSSWriter\Item;
  */
 class FeedGenerator
 {
+    protected $skipFixedPost = false;
+
     public function __construct(FbParser $parser)
     {
         $this->parser = $parser;
@@ -22,15 +24,20 @@ class FeedGenerator
     public function render()
     {
         $this->initFeed();
+        $postParser = new PostParser();
 
         foreach ($this->parser->getPosts() as $post) {
+            $postParser->setPost($post);
+            if ($this->isSkipFixedPost() && $postParser->isFixed()) {
+                continue;
+            }
             $item = clone $this->itemPrototype;
             $item
-                ->title('Post')
-                ->description((string)$post)
-                #->url('http://blog.example.com/2012/08/21/blog-entry/')
-                #->pubDate(strtotime('Tue, 21 Aug 2012 19:50:37 +0900'))
-                #->guid('http://blog.example.com/2012/08/21/blog-entry/', true)
+                #->title('Post')
+                ->description($postParser->getBody())
+                ->url($postParser->getLink())
+                ->pubDate($postParser->getTimestamp())
+                ->guid($postParser->getLink(), true)
                 ->appendTo($this->channel)
             ;
         }
@@ -47,13 +54,13 @@ class FeedGenerator
             $this->channel = new Channel();
             $this->channel
                 ->title($this->parser->getTitle())
-                #->description("Channel Description")
+                ->description($this->parser->getDescription())
                 ->url($this->parser->getURL())
                 ->language($this->parser->getLocale())
-                /*->copyright('Copyright 2012, Foo Bar')
-                ->pubDate(strtotime('Tue, 21 Aug 2012 19:50:37 +0900'))
-                ->lastBuildDate(strtotime('Tue, 21 Aug 2012 19:50:37 +0900'))
-                ->ttl(60)*/
+                ->copyright($this->parser->getCopyright())
+                ->pubDate(time())
+                ->lastBuildDate(time())
+                #->ttl(60)
                 ->appendTo($this->feed);
         }
         if (!isset($this->itemPrototype)) {
@@ -70,6 +77,7 @@ class FeedGenerator
 
     /**
      * @param Channel $channel
+     * @return $this
      */
     public function setChannel(Channel $channel)
     {
@@ -87,6 +95,7 @@ class FeedGenerator
 
     /**
      * @param Item $item
+     * @return $this
      */
     public function setItemPrototype(Item $item)
     {
@@ -104,10 +113,29 @@ class FeedGenerator
 
     /**
      * @param Feed $feed
+     * @return $this
      */
     public function setFeed(Feed $feed)
     {
         $this->feed = $feed;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSkipFixedPost()
+    {
+        return $this->skipFixedPost;
+    }
+
+    /**
+     * @param boolean $skipFixedPost
+     * @return $this
+     */
+    public function setSkipFixedPost($skipFixedPost)
+    {
+        $this->skipFixedPost = $skipFixedPost;
         return $this;
     }
 

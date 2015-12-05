@@ -16,6 +16,16 @@ class FbParser
         return $this->dom->find('title')->innerHTML;
     }
 
+    public function getDescription()
+    {
+        $description = '';
+        $infoIcon = $this->dom->find('i.sx_c1fe4a');
+        if (count($infoIcon)) {
+            $description = strip_tags($infoIcon[0]->getParent()->getParent());
+        }
+        return trim($description);
+    }
+
     public function getLocale()
     {
         return $this->dom->find('#locale')->getAttribute('value');
@@ -28,17 +38,11 @@ class FbParser
 
     public function getPosts()
     {
-        /** @var AbstractNode[] $posts */
-        $posts = $this->dom->find('.userContentWrapper');
-        foreach ($posts as $post) {
-            /** @var AbstractNode $clearfix */
-            $clearfix = $post->find('.clearfix')[0];
-            $clearfix->getParent()->removeChild($clearfix->id());
-            /** @var AbstractNode $commentable */
-            $commentable = $post->find('.commentable_item')[0];
-            $commentable->getParent()->removeChild($commentable->id());
+        return $this->dom->find('.userContentWrapper');
+    }
 
-        }
-        return $posts;
+    public function getCopyright()
+    {
+        return trim(strip_tags($this->dom->find('.rhcFooterCopyright')));
     }
 }
