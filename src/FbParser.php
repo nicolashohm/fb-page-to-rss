@@ -1,28 +1,32 @@
 <?php
-require_once 'vendor/autoload.php';
+
+namespace FbParser;
 
 use PHPHtmlParser\Dom;
-use PHPHtmlParser\Dom\AbstractNode;
-use Suin\RSSWriter\Channel;
-use Suin\RSSWriter\Feed;
 
-class FbPageParser {
-
+class FbParser
+{
     public function __construct(Dom $dom)
     {
         $this->dom = $dom;
     }
 
-    public function printUserContent()
+    public function getTitle()
     {
-        $contents = $this->dom->find('.userContent');
-        foreach ($contents as $post) {
-            $post = (string)$post;
-            printf('%s%s',PHP_EOL, strip_tags($post));
-        }
+        return $this->dom->find('title')->innerHTML;
     }
 
-    public function fullPosts()
+    public function getLocale()
+    {
+        return $this->dom->find('#locale')->getAttribute('value');
+    }
+
+    public function getURL()
+    {
+        return $this->dom->find('input[name="next"]')->getAttribute('value');
+    }
+
+    public function getPosts()
     {
         /** @var AbstractNode[] $posts */
         $posts = $this->dom->find('.userContentWrapper');
@@ -37,12 +41,4 @@ class FbPageParser {
         }
         return $posts;
     }
-
 }
-$dom = new Dom;
-$dom->loadFromFile('fb.html');
-
-$parser = new \FbParser\FbParser($dom);
-
-$feedGenerator = new \FbParser\FeedGenerator($parser);
-echo $feedGenerator->render();
