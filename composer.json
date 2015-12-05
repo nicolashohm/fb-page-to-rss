@@ -1,6 +1,5 @@
 {
     "require": {
-        "paquettg/php-html-parser": "^1.6",
-        "sunra/php-simple-html-dom-parser": "^1.5"
+        "paquettg/php-html-parser": "^1.6"
     }
 }

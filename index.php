@@ -2,32 +2,39 @@
 require_once 'vendor/autoload.php';
 
 use PHPHtmlParser\Dom;
-use Sunra\PhpSimple\HtmlDomParser;
+use PHPHtmlParser\Dom\AbstractNode;
 
-#$dom = new Dom;
-#$dom->loadFromFile('fb.html');
-#$contents = $dom->find('div');
-#var_dump($contents);
-#var_dump($dom);
+class FbPageParser {
 
-#$dom = HtmlDomParser::file_get_html('fb.html');
-#$elems = $dom->find('div[data-time]');
-#var_dump($elems);
+    public function __construct(Dom $dom)
+    {
+        $this->dom = $dom;
+    }
 
-#$dom = new DOMDocument();
-#$dom->loadHTMLFile('fb.html');
-#var_dump($dom);
+    public function printUserContent()
+    {
+        $contents = $this->dom->find('.userContent');
+        foreach ($contents as $post) {
+            $post = (string)$post;
+            printf('%s%s',PHP_EOL, strip_tags($post));
+        }
+    }
 
-$doc = file_get_contents('fb.html');
-/*$doc = str_replace('<!--', '', $doc);
-$doc = str_replace('-->', '', $doc);
-$doc = str_replace('class="_5sem"', 'class="postContainer"', $doc);//*/
-$dom = new Dom;
-$dom->load($doc);
-$contents = $dom->find('.userContent');
-foreach ($contents as $post) {
-    $post = (string)$post;
-    #printf('%s%s',PHP_EOL, strip_tags($post));
+    public function fullPosts()
+    {
+        /** @var AbstractNode[] $posts */
+        $posts = $this->dom->find('.userContentWrapper');
+        foreach ($posts as $post) {
+            $clearfix = $post->find('.clearfix');
+            $clearfix[0]->clear();
+            printf('%s%s',PHP_EOL, strip_tags($post));
+        }
+    }
+
 }
+$dom = new Dom;
+$dom->loadFromFile('fb.html');
 
-$fullPosts = $dom->find('.userContentWrapper');
+$parser = new FbPageParser($dom);
+#$parser->printUserContent();
+$parser->fullPosts();
