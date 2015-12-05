@@ -1,16 +1,19 @@
 <?php
 
-namespace FbParser;
+namespace FbPageToRSS;
 
 use Suin\RSSWriter\Channel;
+use Suin\RSSWriter\ChannelInterface;
+use Suin\RSSWriter\FeedInterface;
 use Suin\RSSWriter\Feed;
+use Suin\RSSWriter\ItemInterface;
 use Suin\RSSWriter\Item;
 
 /**
  * @property FbParser parser
- * @property Feed feed
- * @property Channel channel
- * @property Item $itemPrototype
+ * @property FeedInterface feed
+ * @property ChannelInterface channel
+ * @property ItemInterface $itemPrototype
  */
 class FeedGenerator
 {
@@ -79,7 +82,7 @@ class FeedGenerator
      * @param Channel $channel
      * @return $this
      */
-    public function setChannel(Channel $channel)
+    public function setChannel(ChannelInterface $channel)
     {
         $this->channel = $channel;
         return $this;
@@ -97,7 +100,7 @@ class FeedGenerator
      * @param Item $item
      * @return $this
      */
-    public function setItemPrototype(Item $item)
+    public function setItemPrototype(ItemInterface $item)
     {
         $this->itemPrototype = $item;
         return $this;
@@ -115,7 +118,7 @@ class FeedGenerator
      * @param Feed $feed
      * @return $this
      */
-    public function setFeed(Feed $feed)
+    public function setFeed(FeedInterface $feed)
     {
         $this->feed = $feed;
         return $this;

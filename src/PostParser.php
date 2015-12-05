@@ -1,6 +1,6 @@
 <?php
 
-namespace FbParser;
+namespace FbPageToRSS;
 
 use PHPHtmlParser\Dom\AbstractNode;
 use PHPHtmlParser\Dom\Collection;
